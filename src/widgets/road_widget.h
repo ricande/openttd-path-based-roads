@@ -16,7 +16,7 @@ enum RoadToolbarWidgets : WidgetID {
 	WID_ROT_CAPTION,        ///< Caption of the window
 	WID_ROT_ROAD_X,         ///< Build road in x-direction.
 	WID_ROT_ROAD_Y,         ///< Build road in y-direction.
-	WID_ROT_AUTOROAD,       ///< Autorail.
+	WID_ROT_AUTOROAD,       ///< Freehand road (road) / Autotram (tram).
 	WID_ROT_DEMOLISH,       ///< Demolish.
 	WID_ROT_DEPOT,          ///< Build depot.
 	WID_ROT_BUILD_WAYPOINT, ///< Build waypoint.

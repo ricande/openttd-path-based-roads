@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "gui.h"
+#include "error.h"
 #include "window_gui.h"
 #include "station_gui.h"
 #include "terraform_gui.h"
@@ -27,6 +28,7 @@
 #include "company_base.h"
 #include "hotkeys.h"
 #include "road_gui.h"
+#include "freehand_gui.h"
 #include "toolbar_gui.h"
 #include "zoom_func.h"
 #include "dropdown_type.h"
@@ -431,6 +433,11 @@ struct BuildRoadToolbarWindow : Window {
 				this->GetWidget<NWidgetCore>(WID_ROT_TRUCK_STATION)->SetToolTip(rtt == RoadTramType::Road ? STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRUCK_LOADING_BAY : STR_ROAD_TOOLBAR_TOOLTIP_BUILD_CARGO_TRAM_STATION);
 			}
 		}
+
+		if (rtt == RoadTramType::Road) {
+			this->GetWidget<NWidgetCore>(WID_ROT_AUTOROAD)->SetToolTip(
+					FreehandInfrastructureEnabled() ? STR_ROAD_TOOLBAR_TOOLTIP_BUILD_FREEHAND_ROAD : STR_ROAD_TOOLBAR_TOOLTIP_BUILD_AUTOROAD);
+		}
 	}
 
 	void OnInit() override
@@ -511,7 +518,10 @@ struct BuildRoadToolbarWindow : Window {
 			case WID_ROT_AUTOROAD:
 				this->SetWidgetDisabledState(WID_ROT_REMOVE, !this->IsWidgetLowered(clicked_widget));
 				if (RoadTypeIsRoad(this->roadtype)) {
-					this->SetWidgetDisabledState(WID_ROT_ONE_WAY, !this->IsWidgetLowered(clicked_widget));
+					/* Freehand road does not support one-way roads. */
+					const bool freehand = clicked_widget == WID_ROT_AUTOROAD && FreehandInfrastructureEnabled();
+					this->SetWidgetDisabledState(WID_ROT_ONE_WAY, freehand || !this->IsWidgetLowered(clicked_widget));
+					if (freehand) this->SetWidgetLoweredState(WID_ROT_ONE_WAY, false);
 				}
 				break;
 
@@ -685,10 +695,15 @@ struct BuildRoadToolbarWindow : Window {
 				break;
 
 			case WID_ROT_AUTOROAD:
-				_place_road_dir = Axis::Invalid;
-				_place_road_start_half_x = _tile_fract_coords.x >= 8;
-				_place_road_start_half_y = _tile_fract_coords.y >= 8;
-				VpStartPlaceSizing(tile, VPM_X_OR_Y, DDSP_PLACE_AUTOROAD);
+				if (RoadTypeIsRoad(this->roadtype) && FreehandInfrastructureEnabled()) {
+					FreehandRoadPlaceStart(tile, _cur_roadtype, _remove_button_clicked);
+				} else {
+					/* Classic autoroad / autotram (axis-aligned) placement. */
+					_place_road_dir = Axis::Invalid;
+					_place_road_start_half_x = _tile_fract_coords.x >= 8;
+					_place_road_start_half_y = _tile_fract_coords.y >= 8;
+					VpStartPlaceSizing(tile, VPM_X_OR_Y, DDSP_PLACE_AUTOROAD);
+				}
 				break;
 
 			case WID_ROT_DEMOLISH:
@@ -733,6 +748,8 @@ struct BuildRoadToolbarWindow : Window {
 	{
 		if (_game_mode != GameMode::Editor && (this->IsWidgetLowered(WID_ROT_BUS_STATION) || this->IsWidgetLowered(WID_ROT_TRUCK_STATION))) SetViewportCatchmentStation(nullptr, true);
 
+		FreehandRoadPlaceAbort();
+
 		this->RaiseButtons();
 		this->SetWidgetDisabledState(WID_ROT_REMOVE, true);
 		this->SetWidgetDirty(WID_ROT_REMOVE);
@@ -752,6 +769,8 @@ struct BuildRoadToolbarWindow : Window {
 
 	void OnPlaceDrag(ViewportPlaceMethod select_method, [[maybe_unused]] ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt) override
 	{
+		if (FreehandRoadPlaceDrag(select_proc, pt, _remove_button_clicked)) return;
+
 		/* Here we update the end tile flags
 		 * of the road placement actions.
 		 * At first we reset the end halfroad
@@ -796,6 +815,9 @@ struct BuildRoadToolbarWindow : Window {
 
 	void OnPlaceMouseUp([[maybe_unused]] ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt, TileIndex start_tile, TileIndex end_tile) override
 	{
+		const auto *rti = GetRoadTypeInfo(this->roadtype);
+		if (FreehandRoadPlaceMouseUp(select_proc, _remove_button_clicked, _cur_roadtype, rti->strings.err_build_road, rti->strings.err_remove_road)) return;
+
 		if (pt.x != -1) {
 			switch (select_proc) {
 				default: NOT_REACHED();

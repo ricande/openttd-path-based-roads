@@ -387,6 +387,16 @@ add_files(
     road_cmd.cpp
     road_cmd.h
     road_func.h
+    freehand_path.cpp
+    freehand_path.h
+    freehand_gui.cpp
+    freehand_gui.h
+    canal_freehand.cpp
+    canal_freehand.h
+    rail_freehand.cpp
+    rail_freehand.h
+    road_freehand.cpp
+    road_freehand.h
     road_gui.cpp
     road_gui.h
     road_internal.h

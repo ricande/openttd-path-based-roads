@@ -1,5 +1,9 @@
 # OpenTTD
 
+> This repository is an experimental fork of OpenTTD. It is not affiliated with or endorsed by the OpenTTD project.
+
+This version experiments with an optional path-based road construction interface (freehand path tools for road, rail, and canals). See the client setting under Interface → Construction.
+
 ## Table of contents
 
 - 1.0) [About](#10-about)

@@ -12,6 +12,8 @@
 #include "window_gui.h"
 #include "station_gui.h"
 #include "command_func.h"
+#include "error.h"
+#include "strings_func.h"
 #include "water.h"
 #include "window_func.h"
 #include "vehicle_func.h"
@@ -30,6 +32,7 @@
 #include "station_cmd.h"
 #include "water_cmd.h"
 #include "waypoint_cmd.h"
+#include "freehand_gui.h"
 #include "timer/timer.h"
 #include "timer/timer_game_calendar.h"
 
@@ -145,6 +148,12 @@ struct BuildDocksToolbarWindow : Window {
 				this->GetWidget<NWidgetCore>(WID_DT_BUOY)->SetToolTip(STR_WATERWAYS_TOOLBAR_BUOY_TOOLTIP);
 			}
 		}
+
+		NWidgetStacked *sel = this->GetWidget<NWidgetStacked>(WID_DT_SEL_FREEHAND_CANAL);
+		if (sel != nullptr) {
+			const int plane = FreehandInfrastructureEnabled() ? 0 : SZSP_NONE;
+			if (sel->SetDisplayedPlane(plane)) this->ReInit();
+		}
 	}
 
 	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
@@ -156,6 +165,10 @@ struct BuildDocksToolbarWindow : Window {
 				} else {
 					HandlePlacePushButton(this, WID_DT_CANAL, SPR_CURSOR_CANAL, HT_RECT | HT_DIAGONAL);
 				}
+				break;
+
+			case WID_DT_FREEHAND_CANAL: // Freehand canal path
+				HandlePlacePushButton(this, WID_DT_FREEHAND_CANAL, SPR_CURSOR_CANAL, HT_RECT);
 				break;
 
 			case WID_DT_LOCK: // Build lock button
@@ -197,6 +210,10 @@ struct BuildDocksToolbarWindow : Window {
 		switch (this->last_clicked_widget) {
 			case WID_DT_CANAL: // Build canal button
 				VpStartPlaceSizing(tile, VPM_X_AND_Y, DDSP_CREATE_WATER);
+				break;
+
+			case WID_DT_FREEHAND_CANAL: // Freehand canal path
+				FreehandCanalPlaceStart(tile, _ctrl_pressed);
 				break;
 
 			case WID_DT_LOCK: // Build lock button
@@ -247,6 +264,8 @@ struct BuildDocksToolbarWindow : Window {
 
 	void OnPlaceDrag(ViewportPlaceMethod select_method, [[maybe_unused]] ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt) override
 	{
+		if (FreehandCanalPlaceDrag(select_proc, pt, _ctrl_pressed)) return;
+
 		VpSelectTilesWithMethod(pt.x, pt.y, select_method);
 	}
 
@@ -257,6 +276,8 @@ struct BuildDocksToolbarWindow : Window {
 
 	void OnPlaceMouseUp([[maybe_unused]] ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt, TileIndex start_tile, TileIndex end_tile) override
 	{
+		if (FreehandCanalPlaceMouseUp(select_proc, _ctrl_pressed)) return;
+
 		if (pt.x != -1) {
 			switch (select_proc) {
 				case DDSP_DEMOLISH_AREA:
@@ -281,6 +302,8 @@ struct BuildDocksToolbarWindow : Window {
 	void OnPlaceObjectAbort() override
 	{
 		if (_game_mode != GameMode::Editor && this->IsWidgetLowered(WID_DT_STATION)) SetViewportCatchmentStation(nullptr, true);
+
+		FreehandCanalPlaceAbort();
 
 		this->RaiseButtons();
 
@@ -331,6 +354,7 @@ struct BuildDocksToolbarWindow : Window {
 		Hotkey('6', "buoy", WID_DT_BUOY),
 		Hotkey('7', "river", WID_DT_RIVER),
 		Hotkey({'B', '8'}, "aqueduct", WID_DT_BUILD_AQUEDUCT),
+		Hotkey('9', "freehand_canal", WID_DT_FREEHAND_CANAL),
 	}, DockToolbarGlobalHotkeys};
 };
 
@@ -346,6 +370,9 @@ static constexpr std::initializer_list<NWidgetPart> _nested_build_docks_toolbar_
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL_LTR),
 		NWidget(WWT_IMGBTN, Colours::DarkGreen, WID_DT_CANAL), SetToolbarMinimalSize(1), SetFill(0, 1), SetSpriteTip(SPR_IMG_BUILD_CANAL, STR_WATERWAYS_TOOLBAR_BUILD_CANALS_TOOLTIP),
+		NWidget(NWID_SELECTION, Colours::Invalid, WID_DT_SEL_FREEHAND_CANAL),
+			NWidget(WWT_IMGBTN, Colours::DarkGreen, WID_DT_FREEHAND_CANAL), SetToolbarMinimalSize(1), SetFill(0, 1), SetSpriteTip(SPR_IMG_AUTOROAD, STR_WATERWAYS_TOOLBAR_BUILD_FREEHAND_CANAL_TOOLTIP),
+		EndContainer(),
 		NWidget(WWT_IMGBTN, Colours::DarkGreen, WID_DT_LOCK), SetToolbarMinimalSize(1), SetFill(0, 1), SetSpriteTip(SPR_IMG_BUILD_LOCK, STR_WATERWAYS_TOOLBAR_BUILD_LOCKS_TOOLTIP),
 		NWidget(WWT_PANEL, Colours::DarkGreen), SetToolbarSpacerMinimalSize(), SetFill(1, 1), EndContainer(),
 		NWidget(WWT_IMGBTN, Colours::DarkGreen, WID_DT_DEMOLISH), SetToolbarMinimalSize(1), SetFill(0, 1), SetSpriteTip(SPR_IMG_DYNAMITE, STR_TOOLTIP_DEMOLISH_BUILDINGS_ETC),
@@ -392,6 +419,9 @@ static constexpr std::initializer_list<NWidgetPart> _nested_build_docks_scen_too
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_IMGBTN, Colours::DarkGreen, WID_DT_CANAL), SetToolbarMinimalSize(1), SetFill(0, 1), SetSpriteTip(SPR_IMG_BUILD_CANAL, STR_WATERWAYS_TOOLBAR_CREATE_LAKE_TOOLTIP),
+		NWidget(NWID_SELECTION, Colours::Invalid, WID_DT_SEL_FREEHAND_CANAL),
+			NWidget(WWT_IMGBTN, Colours::DarkGreen, WID_DT_FREEHAND_CANAL), SetToolbarMinimalSize(1), SetFill(0, 1), SetSpriteTip(SPR_IMG_AUTOROAD, STR_WATERWAYS_TOOLBAR_BUILD_FREEHAND_CANAL_TOOLTIP),
+		EndContainer(),
 		NWidget(WWT_IMGBTN, Colours::DarkGreen, WID_DT_LOCK), SetToolbarMinimalSize(1), SetFill(0, 1), SetSpriteTip(SPR_IMG_BUILD_LOCK, STR_WATERWAYS_TOOLBAR_BUILD_LOCKS_TOOLTIP),
 		NWidget(WWT_PANEL, Colours::DarkGreen), SetToolbarSpacerMinimalSize(), SetFill(1, 1), EndContainer(),
 		NWidget(WWT_IMGBTN, Colours::DarkGreen, WID_DT_DEMOLISH), SetToolbarMinimalSize(1), SetFill(0, 1), SetSpriteTip(SPR_IMG_DYNAMITE, STR_TOOLTIP_DEMOLISH_BUILDINGS_ETC),

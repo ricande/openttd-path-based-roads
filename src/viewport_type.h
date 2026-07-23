@@ -134,6 +134,7 @@ enum ViewportDragDropSelectionProcess : uint8_t {
 
 	/* Rail specific actions */
 	DDSP_PLACE_RAIL,           ///< Rail placement
+	DDSP_PLACE_FREEHAND_RAIL,  ///< Freehand rail placement (replaces autorail)
 	DDSP_BUILD_SIGNALS,        ///< Signal placement
 	DDSP_BUILD_STATION,        ///< Station placement
 	DDSP_REMOVE_STATION,       ///< Station removal
@@ -143,6 +144,8 @@ enum ViewportDragDropSelectionProcess : uint8_t {
 	DDSP_PLACE_ROAD_X_DIR,     ///< Road placement (X axis)
 	DDSP_PLACE_ROAD_Y_DIR,     ///< Road placement (Y axis)
 	DDSP_PLACE_AUTOROAD,       ///< Road placement (auto)
+	DDSP_PLACE_FREEHAND_ROAD,  ///< Freehand road placement (replaces road autoroad)
+	DDSP_PLACE_FREEHAND_CANAL, ///< Freehand canal placement
 	DDSP_BUILD_ROAD_WAYPOINT,  ///< Road stop placement (waypoint)
 	DDSP_BUILD_BUSSTOP,        ///< Road stop placement (buses)
 	DDSP_BUILD_TRUCKSTOP,      ///< Road stop placement (trucks)

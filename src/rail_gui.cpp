@@ -35,6 +35,11 @@
 #include "vehicle_func.h"
 #include "zoom_func.h"
 #include "rail_gui.h"
+#include "freehand_gui.h"
+#include "rail.h"
+#include "error.h"
+#include "settings_type.h"
+#include "track_func.h"
 #include "toolbar_gui.h"
 #include "station_cmd.h"
 #include "tunnelbridge_cmd.h"
@@ -500,6 +505,9 @@ struct BuildRailToolbarWindow : Window {
 			CloseWindowById(WindowClass::BuildWaypoint, TransportType::Rail);
 			CloseWindowById(WindowClass::JoinStation, 0);
 		}
+
+		this->GetWidget<NWidgetCore>(WID_RAT_AUTORAIL)->SetToolTip(
+				FreehandInfrastructureEnabled() ? STR_RAIL_TOOLBAR_TOOLTIP_BUILD_FREEHAND_RAIL : STR_RAIL_TOOLBAR_TOOLTIP_BUILD_AUTORAIL);
 	}
 
 	bool OnTooltip([[maybe_unused]] Point pt, WidgetID widget, TooltipCloseCondition close_cond) override
@@ -617,7 +625,7 @@ struct BuildRailToolbarWindow : Window {
 			case WID_RAT_BUILD_X: return HT_LINE | HT_DIR_X;
 			case WID_RAT_BUILD_EW: return HT_LINE | HT_DIR_HL;
 			case WID_RAT_BUILD_Y: return HT_LINE | HT_DIR_Y;
-			case WID_RAT_AUTORAIL: return HT_RAIL;
+			case WID_RAT_AUTORAIL: return FreehandInfrastructureEnabled() ? HT_RECT : HT_RAIL;
 			case WID_RAT_DEMOLISH: return HT_RECT | HT_DIAGONAL;
 			case WID_RAT_BUILD_DEPOT: return HT_RECT;
 			case WID_RAT_BUILD_WAYPOINT: return HT_RECT;
@@ -704,7 +712,11 @@ struct BuildRailToolbarWindow : Window {
 				break;
 
 			case WID_RAT_AUTORAIL:
-				VpStartPlaceSizing(tile, VPM_RAILDIRS, DDSP_PLACE_RAIL);
+				if (FreehandInfrastructureEnabled()) {
+					FreehandRailPlaceStart(tile, _cur_railtype, _remove_button_clicked);
+				} else {
+					VpStartPlaceSizing(tile, VPM_RAILDIRS, DDSP_PLACE_RAIL);
+				}
 				break;
 
 			case WID_RAT_DEMOLISH:
@@ -745,6 +757,8 @@ struct BuildRailToolbarWindow : Window {
 
 	void OnPlaceDrag(ViewportPlaceMethod select_method, [[maybe_unused]] ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt) override
 	{
+		if (FreehandRailPlaceDrag(select_proc, pt, _remove_button_clicked)) return;
+
 		/* no dragging if you have pressed the convert button */
 		if (FindWindowById(WindowClass::BuildSignal, 0) != nullptr && _convert_signal_button && this->IsWidgetLowered(WID_RAT_BUILD_SIGNALS)) return;
 
@@ -758,6 +772,8 @@ struct BuildRailToolbarWindow : Window {
 
 	void OnPlaceMouseUp([[maybe_unused]] ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt, TileIndex start_tile, TileIndex end_tile) override
 	{
+		if (FreehandRailPlaceMouseUp(select_proc, _remove_button_clicked, _cur_railtype)) return;
+
 		if (pt.x != -1) {
 			switch (select_proc) {
 				default: NOT_REACHED();
@@ -822,6 +838,8 @@ struct BuildRailToolbarWindow : Window {
 	{
 		if (this->IsWidgetLowered(WID_RAT_BUILD_STATION)) SetViewportCatchmentStation(nullptr, true);
 		if (this->IsWidgetLowered(WID_RAT_BUILD_WAYPOINT)) SetViewportCatchmentWaypoint(nullptr, true);
+
+		FreehandRailPlaceAbort();
 
 		this->RaiseButtons();
 		this->DisableWidget(WID_RAT_REMOVE);

@@ -28,14 +28,16 @@ enum BuildDocksStationWidgets : WidgetID {
 
 /** Widgets of the #BuildDocksToolbarWindow class. */
 enum DockToolbarWidgets : WidgetID {
-	WID_DT_CANAL,          ///< Build canal button.
-	WID_DT_LOCK,           ///< Build lock button.
-	WID_DT_DEMOLISH,       ///< Demolish aka dynamite button.
-	WID_DT_DEPOT,          ///< Build depot button.
-	WID_DT_STATION,        ///< Build station button.
-	WID_DT_BUOY,           ///< Build buoy button.
-	WID_DT_RIVER,          ///< Build river button (in scenario editor).
-	WID_DT_BUILD_AQUEDUCT, ///< Build aqueduct button.
+	WID_DT_CANAL,              ///< Build canal button (area).
+	WID_DT_SEL_FREEHAND_CANAL, ///< Selection to show/hide freehand canal button.
+	WID_DT_FREEHAND_CANAL,     ///< Freehand canal path button.
+	WID_DT_LOCK,               ///< Build lock button.
+	WID_DT_DEMOLISH,           ///< Demolish aka dynamite button.
+	WID_DT_DEPOT,              ///< Build depot button.
+	WID_DT_STATION,            ///< Build station button.
+	WID_DT_BUOY,               ///< Build buoy button.
+	WID_DT_RIVER,              ///< Build river button (in scenario editor).
+	WID_DT_BUILD_AQUEDUCT,     ///< Build aqueduct button.
 };
 
 #endif /* WIDGETS_DOCK_WIDGET_H */

@@ -64,6 +64,7 @@
 #include "core/backup_type.hpp"
 #include "landscape.h"
 #include "viewport_func.h"
+#include "freehand_gui.h"
 #include "station_base.h"
 #include "waypoint_base.h"
 #include "town.h"
@@ -1126,6 +1127,12 @@ static void DrawTileSelection(const TileInfo *ti)
 	/* Draw a red error square? */
 	bool is_redsq = _thd.redsq == ti->tile;
 	if (is_redsq) DrawTileSelectionRect(ti, PALETTE_TILE_RED_PULSATING);
+
+	/* Freehand stroke preview (road / rail / canal; independent of rectangular HT_RECT). */
+	bool freehand_red = false;
+	if (GetFreehandPreviewHighlight(ti->tile, freehand_red)) {
+		DrawTileSelectionRect(ti, freehand_red ? PALETTE_SEL_TILE_RED : PAL_NONE);
+	}
 
 	TileHighlightType tht = GetTileHighlightType(ti->tile);
 	DrawTileHighlightType(ti, tht);

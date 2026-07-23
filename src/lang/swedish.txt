@@ -1826,6 +1826,8 @@ STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS_HELPTEXT            :Håll verktygen
 
 STR_CONFIG_SETTING_AUTO_REMOVE_SIGNALS                          :Automatiskt ta bort signaler vid byggande av järnväg: {STRING}
 STR_CONFIG_SETTING_AUTO_REMOVE_SIGNALS_HELPTEXT                 :Ta automatiskt bort signaler vid byggande av järnväg om signalerna är i vägen. Notera att detta kan leda till att tåg krockar
+STR_CONFIG_SETTING_FREEHAND_INFRASTRUCTURE_TOOLS                :Använd frihandsverktyg för väg, järnväg och kanaler: {STRING}
+STR_CONFIG_SETTING_FREEHAND_INFRASTRUCTURE_TOOLS_HELPTEXT       :När detta är aktiverat använder Autoväg/Autospår och kanalernas frihandsverktyg frihandsdragning med backtrack. När det är avaktiverat används klassiskt Autoväg/Autospår och kanalernas frihandsknapp döljs
 
 STR_CONFIG_SETTING_FAST_FORWARD_SPEED_LIMIT                     :Begränsning av snabbspolning: {STRING}
 STR_CONFIG_SETTING_FAST_FORWARD_SPEED_LIMIT_HELPTEXT            :Begränsa hur snabbt spelet går när snabbspolning är aktiverad. 0 = ingen begränsning (så snabbt som din dator tillåter). Värden under 100% saktar ner spelet. Den övre begränsningen beror på din dators specifikationer och kan variera beroende på spelet
@@ -2836,6 +2838,7 @@ STR_RAIL_TOOLBAR_MAGLEV_CONSTRUCTION_CAPTION                    :Bygg maglev
 
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TRACK                   :{BLACK}Bygg järnvägspår. Ctrl+Klick för att ta bort järnvägspår. Håll även in Shift för att endast visa uppskattad kostnad
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_AUTORAIL                         :{BLACK}Bygg järnvägspår med Autospårläget. Ctrl+Klick för att ta bort järnvägspår. Håll även in Shift för att endast visa uppskattad kostnad
+STR_RAIL_TOOLBAR_TOOLTIP_BUILD_FREEHAND_RAIL                    :{BLACK}Bygg järnvägspår genom att dra en frihandsstig. Kurvor läggs automatiskt. Dra tillbaka längs stigen för att korta den. Ctrl+Klick för att ta bort en frihandsstig. Stigen avbryts om den blockeras. Håll även in Shift för att endast visa uppskattad kostnad
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_TRAIN_DEPOT_FOR_BUILDING         :{BLACK}Bygg tågdepå (för köp och service av tåg). Håll även in Shift för att endast visa uppskattad kostnad
 STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_TO_WAYPOINT               :{BLACK}Bygg riktmärke på räls. Ctrl+Klick för att välja ett annat riktmärke att sammanlänka. Håll även in Shift för att endast visa uppskattad kostnad
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_STATION                 :{BLACK}Bygg järnvägsstation. Ctrl+Klick för att välja en annan station att sammanlänka. Håll även in Shift för att endast visa uppskattad kostnad
@@ -2985,6 +2988,7 @@ STR_ROAD_TOOLBAR_TRAM_CONSTRUCTION_CAPTION                      :{WHITE}Bygg sp�
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_ROAD_SECTION                     :{BLACK}Bygg vägsektion. Ctrl+Klick för att ta bort vägsektion. Håll även in Shift för att endast visa uppskattad kostnad
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRAMWAY_SECTION                  :{BLACK}Bygg spårvägssektion. Ctrl+Klick för att ta bort spårvägssektion. Håll även in Shift för att endast visa uppskattad kostnad
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_AUTOROAD                         :{BLACK}Bygg vägsektion med Autovägläget. Ctrl+Klick för att ta bort vägsektion. Håll även in Shift för att endast visa uppskattad kostnad
+STR_ROAD_TOOLBAR_TOOLTIP_BUILD_FREEHAND_ROAD                    :{BLACK}Bygg väg genom att dra en frihandsstig. Kurvor läggs automatiskt. Dra tillbaka längs stigen för att korta den. Ctrl+Klick för att ta bort en frihandsstig. Stigen avbryts om den blockeras. Håll även in Shift för att endast visa uppskattad kostnad
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_AUTOTRAM                         :{BLACK}Bygg spårvägssektion med Autospårvägläget. Ctrl+Klick för att ta bort spårvägssektion. Håll även in Shift för att endast visa uppskattad kostnad
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_ROAD_VEHICLE_DEPOT               :{BLACK}Bygg vägfordonsdepå (för köp och service av fordon). Håll även in Shift för att endast visa uppskattad kostnad
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRAM_VEHICLE_DEPOT               :{BLACK}Bygg spårvagnsdepå (för köp och service av fordon). Håll även in Shift för att endast visa uppskattad kostnad
@@ -3027,6 +3031,7 @@ STR_STATION_BUILD_CARGO_TRAM_ORIENTATION_TOOLTIP                :{BLACK}Välj ri
 STR_WATERWAYS_TOOLBAR_CAPTION                                   :{WHITE}Farledskonstruktion
 STR_WATERWAYS_TOOLBAR_CAPTION_SE                                :{WHITE}Farled
 STR_WATERWAYS_TOOLBAR_BUILD_CANALS_TOOLTIP                      :{BLACK}Bygg kanaler. Ctrl+klicka+dra för att välja ytan diagonalt. Håll även in Shift för att endast visa uppskattad kostnad
+STR_WATERWAYS_TOOLBAR_BUILD_FREEHAND_CANAL_TOOLTIP              :{BLACK}Bygg kanaler genom att dra en frihandsstig. Dra tillbaka längs stigen för att korta den. Ctrl+Klick för att ta bort kanaler längs stigen. Stigen avbryts om den blockeras. Håll även in Shift för att endast visa uppskattad kostnad
 STR_WATERWAYS_TOOLBAR_BUILD_LOCKS_TOOLTIP                       :{BLACK}Bygg slussar. Håll även in Shift för att endast visa uppskattad kostnad
 STR_WATERWAYS_TOOLBAR_BUILD_DEPOT_TOOLTIP                       :{BLACK}Bygg skeppsvarv (för köp och service av skepp). Håll även in Shift för att endast visa uppskattad kostnad
 STR_WATERWAYS_TOOLBAR_BUILD_DOCK_TOOLTIP                        :{BLACK}Bygg hamn. Ctrl+Klick för att välja en annan station att sammanlänka. Håll även in Shift för att endast visa uppskattad kostnad
