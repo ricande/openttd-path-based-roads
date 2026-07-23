@@ -4,6 +4,8 @@
 
 This version experiments with an optional path-based road construction interface (freehand path tools for road, rail, and canals). See the client setting under Interface → Construction.
 
+> **Experimental / single-player only:** The current freehand infrastructure implementation is experimental. It is intended for single-player use and does **not** currently support multiplayer.
+
 ## Modifications
 
 - [Freehand Infrastructure Tools — File Change Map](FREEHAND_INFRASTRUCTURE.md)
