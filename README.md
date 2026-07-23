@@ -4,6 +4,10 @@
 
 This version experiments with an optional path-based road construction interface (freehand path tools for road, rail, and canals). See the client setting under Interface → Construction.
 
+## Modifications
+
+- [Freehand Infrastructure Tools — File Change Map](FREEHAND_INFRASTRUCTURE.md)
+
 ## Table of contents
 
 - 1.0) [About](#10-about)
